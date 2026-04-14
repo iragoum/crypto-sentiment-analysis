@@ -1,0 +1,16 @@
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+seaborn>=0.12
+scipy>=1.11
+statsmodels>=0.14
+vaderSentiment>=3.3.2
+transformers>=4.35
+torch>=2.0
+torchinfo>=1.8
+pycoingecko>=3.2
+nltk>=3.8
+pytest>=7.4
+openpyxl>=3.1
+tqdm>=4.65
+requests>=2.31
