@@ -1,57 +1,65 @@
-# Twitter Sentiment vs Cryptocurrency Prices
+# Исследование изменения стоимости криптовалют на основе сообщений участников рынка
 
 [![CI](https://github.com/iragoum/crypto-sentiment-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/iragoum/crypto-sentiment-analysis/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A statistical study of the relationship between **Twitter sentiment** and the price dynamics of **Bitcoin (BTC)**, **Ethereum (ETH)**, and **Binance Coin (BNB)** — using both lexicon-based (VADER) and transformer-based (FinBERT) sentiment analysis, combined with rigorous time-series statistics.
+Выпускная квалификационная работа по направлению **02.03.02 «Фундаментальная информатика и информационные технологии»**.
 
-> Bachelor thesis — Peoples' Friendship University of Russia (RUDN), 2026  
-> Department of Mathematical Modelling and Artificial Intelligence  
-> Direction 02.03.02 "Fundamental Informatics and Information Technologies"
+**Студент:** Мугари Абдеррахим, группа НФИбд-01-22  
+**Научный руководитель:** доц., к.т.н. Молодченков А.И.  
+**Кафедра:** Математического моделирования и искусственного интеллекта (ММИИ)  
+**Университет:** Российский университет дружбы народов имени Патриса Лумумбы, 2026
 
 ---
 
-## Overview
+## О работе
 
-| | |
+Исследование статистической взаимосвязи между **тональностью сообщений участников рынка в Twitter** и **динамикой стоимости криптовалют Bitcoin (BTC), Ethereum (ETH) и Binance Coin (BNB)**.
+
+Применяются два подхода к анализу тональности:
+- **VADER** — лексиконный метод, оптимизированный для текстов социальных медиа
+- **FinBERT** (`ProsusAI/finbert`) — трансформерная модель, дообученная на финансовых текстах (109,5 млн параметров)
+
+Статистический анализ включает корреляционный анализ, тест причинности Грейнджера (на исходных и дифференцированных рядах), тест стационарности Дики–Фуллера, апостериорный анализ мощности и бинарную классификацию направления доходности.
+
+| Параметр | Значение |
 |---|---|
-| **Dataset** | 703 536 filtered tweets (BTC: 321 627 · ETH: 306 738 · BNB: 75 171) |
-| **Period** | 26 Jul – 30 Aug 2022 · 36 days |
-| **Sentiment models** | VADER (lexicon) + FinBERT `ProsusAI/finbert` (transformer, 109.5 M params) |
-| **Statistical tests** | Pearson/Spearman correlation · Granger causality (raw + differenced) · ADF stationarity · Post-hoc power analysis |
-| **Classifiers** | Logistic Regression · Gradient Boosting · DummyClassifier baseline |
-| **Validation** | Walk-forward cross-validation · Bootstrap 95 % CI (1 000 iterations) |
-| **Tests** | 354 automated tests · Python 3.10 / 3.11 / 3.12 · GitHub Actions |
+| Набор данных | 703 536 отфильтрованных твитов (BTC: 321 627 · ETH: 306 738 · BNB: 75 171) |
+| Период наблюдения | 26 июля — 30 августа 2022 года (36 дней) |
+| Методы анализа тональности | VADER + FinBERT (CPU) |
+| Статистические тесты | Pearson/Spearman · Granger · ADF · Power analysis |
+| Классификаторы | Логистическая регрессия · Gradient Boosting · DummyClassifier |
+| Тестов | 354 автоматизированных теста · Python 3.10 / 3.11 / 3.12 |
 
 ---
 
-## Repository Structure
+## Структура репозитория
 
 ```
 .
 ├── code/
-│   ├── .github/workflows/ci.yml   # CI matrix: Python 3.10 / 3.11 / 3.12
+│   ├── .github/workflows/ci.yml   # CI: Python 3.10 / 3.11 / 3.12
 │   ├── src/
-│   │   ├── data_loader.py          # Load & validate filtered tweet CSVs
-│   │   ├── preprocessor.py         # Text cleaning, dual-format output (VADER / FinBERT)
-│   │   ├── sentiment_analyzer.py   # VADER scoring + FinBERT inference (CPU)
-│   │   ├── price_fetcher.py        # Binance Vision → CoinGecko → fallback price chain
-│   │   ├── binance_loader.py       # Aggregate 1-min OHLCV → daily prices
-│   │   ├── correlation_analyzer.py # Pearson/Spearman, lagged corr, Granger, ADF
-│   │   ├── power_analysis.py       # Fisher z post-hoc power, min detectable r
-│   │   └── predictor.py            # Binary return classifier, walk-forward CV, bootstrap CI
-│   ├── tests/                      # 354 pytest tests
-│   ├── data/processed/             # Cached daily prices: BTC / ETH / BNB (committed)
+│   │   ├── data_loader.py          # Загрузка и валидация твитов
+│   │   ├── preprocessor.py         # Очистка текста (раздельно для VADER и FinBERT)
+│   │   ├── sentiment_analyzer.py   # Оценка тональности VADER + FinBERT
+│   │   ├── price_fetcher.py        # Цепочка источников цен: Binance → CoinGecko → fallback
+│   │   ├── binance_loader.py       # Агрегация 1-мин OHLCV → дневные цены
+│   │   ├── correlation_analyzer.py # Корреляция, Грейнджер, ADF, дифференцирование рядов
+│   │   ├── power_analysis.py       # Мощность теста через Fisher z, минимально детектируемый r
+│   │   └── predictor.py            # Классификатор направления доходности, walk-forward CV, bootstrap CI
+│   ├── tests/                      # 354 pytest-теста
+│   ├── data/processed/             # Кэш дневных цен BTC / ETH / BNB (включён в репозиторий)
 │   ├── results/
-│   │   ├── btc/   figures/ + tables/
-│   │   ├── eth/   figures/ + tables/
-│   │   ├── bnb/   figures/ + tables/
-│   │   ├── cross_crypto/           # 3-asset comparison tables + figures
-│   │   ├── prediction/             # Classifier metrics per asset + panel
-│   │   └── finbert_torchinfo.txt   # FinBERT architecture summary (torchinfo)
-│   ├── main.py                     # 12-step end-to-end pipeline
-│   ├── convert_data.py             # Filter raw Kaggle CSVs → per-asset datasets
+│   │   ├── btc/    figures/ + tables/
+│   │   ├── eth/    figures/ + tables/
+│   │   ├── bnb/    figures/ + tables/
+│   │   ├── cross_crypto/           # Сравнительный анализ трёх криптовалют
+│   │   ├── prediction/             # Метрики классификатора по каждому активу + панель
+│   │   └── finbert_torchinfo.txt   # Сводка архитектуры FinBERT (torchinfo)
+│   ├── main.py                     # Сквозной конвейер из 12 шагов
+│   ├── convert_data.py             # Фильтрация сырых Kaggle CSV → наборы по криптовалютам
 │   ├── requirements.txt
 │   └── requirements-test.txt
 └── README.md
@@ -59,73 +67,72 @@ A statistical study of the relationship between **Twitter sentiment** and the pr
 
 ---
 
-## Pipeline
+## Конвейер обработки данных
 
-`main.py` runs a **12-step sequential pipeline**:
+`main.py` реализует **12 последовательных шагов**:
 
 ```
-Step  1  Load           Read filtered tweets for selected crypto(s)
-Step  2  Preprocess     Clean text; produce original (VADER) + cleaned (FinBERT) variants
-Step  3  VADER          Score sentiment with lexicon model → compound ∈ [-1, +1]
-Step  4  FinBERT        3-class inference (positive / neutral / negative) on CPU
-Step  5  torchinfo      Print FinBERT architecture summary
-Step  6  Prices         Load daily OHLCV from Binance Vision cache / CoinGecko / fallback
-Step  7  Aggregate      Daily sentiment stats merged with price returns
-Step  8  Correlation    Pearson & Spearman (lag 0–7), correlation matrix
-Step  9  Granger (raw)  Granger causality on original series (lag 1–4)
-Step 10  Granger (diff) ADF test → first difference if needed → Granger on stationary series
-Step 11  Power          Post-hoc power for observed r; minimum detectable r at 80 % power
-Step 12  Predictor      LR / GBM / Dummy classifier, walk-forward CV, bootstrap 95 % CI
+Шаг  1  Загрузка       Чтение отфильтрованных твитов для выбранной криптовалюты
+Шаг  2  Предобработка  Очистка; формирование оригинального (VADER) и чистого (FinBERT) вариантов текста
+Шаг  3  VADER          Лексиконная оценка тональности → compound ∈ [-1, +1]
+Шаг  4  FinBERT        3-классовый инференс (позитивный / нейтральный / негативный) на CPU
+Шаг  5  torchinfo      Вывод сводки архитектуры FinBERT
+Шаг  6  Цены           Загрузка дневных OHLCV: Binance Vision → CoinGecko → fallback
+Шаг  7  Агрегация      Дневная тональность объединяется с доходностью
+Шаг  8  Корреляция     Pearson и Spearman (лаги 0–7), корреляционная матрица
+Шаг  9  Грейнджер (исх.) Тест причинности на исходных рядах (лаги 1–4)
+Шаг 10  Грейнджер (дифф.) ADF → первая разность при нестационарности → тест Грейнджера
+Шаг 11  Мощность       Апостериорный анализ мощности для наблюдаемых r; минимально детектируемый r при 80%
+Шаг 12  Классификатор  LR / GBM / Dummy, walk-forward CV, bootstrap 95% CI
 ```
 
 ---
 
-## Installation
+## Установка
 
 ```bash
 git clone https://github.com/iragoum/crypto-sentiment-analysis.git
 cd crypto-sentiment-analysis/code
 
-# Create virtual environment
+# Виртуальное окружение
 python -m venv venv
 source venv/bin/activate        # Linux / macOS
 venv\Scripts\activate           # Windows
 
-# CPU-only PyTorch (no GPU required)
+# PyTorch CPU-only (GPU не требуется)
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 
-# All dependencies
+# Остальные зависимости
 pip install -r requirements.txt
 ```
 
-> FinBERT (`ProsusAI/finbert`) downloads automatically on first run via HuggingFace Hub (~450 MB).  
-> No GPU needed — the entire pipeline runs on CPU.
+> FinBERT загружается автоматически при первом запуске через HuggingFace Hub (~450 МБ).
 
-### Dataset
+### Набор данных
 
-Raw tweets are **not included** (download from Kaggle):  
+Сырые твиты в репозиторий **не включены**. Загрузите датасет с Kaggle:  
 [kaggle.com/datasets/ilariamazzoli/3-million-tweets-cryptocurrencies-btc-eth-bnb](https://www.kaggle.com/datasets/ilariamazzoli/3-million-tweets-cryptocurrencies-btc-eth-bnb)
 
-Unzip to `code/data/raw/`, then filter:
+Распакуйте в `code/data/raw/`, затем запустите фильтрацию:
 
 ```bash
-python convert_data.py --crypto all   # produces tweets_{btc,eth,bnb}.csv
+python convert_data.py --crypto all   # формирует tweets_{btc,eth,bnb}.csv
 ```
 
-Daily price files are already committed under `code/data/processed/`.
+Дневные ценовые данные (`data/processed/`) уже включены в репозиторий.
 
 ---
 
-## Usage
+## Запуск
 
 ```bash
-# Full pipeline — all three assets (VADER + FinBERT)
+# Полный конвейер по трём криптовалютам (VADER + FinBERT)
 python main.py --crypto all
 
-# VADER only, fast (~5 min)
+# Только VADER (быстро, ~5 минут)
 python main.py --crypto all --skip-finbert
 
-# Single asset
+# Одна криптовалюта
 python main.py --crypto btc
 python main.py --crypto eth
 python main.py --crypto bnb
@@ -133,176 +140,176 @@ python main.py --crypto bnb
 
 ---
 
-## Results
+## Результаты
 
-### Dataset statistics
+### Объём данных
 
-| Asset | Raw tweets | After filtering | Removed | Days |
-|-------|-----------|----------------|---------|------|
-| BTC   | 737 089   | **321 627**    | 56.4 %  | 36   |
-| ETH   | 739 618   | **306 738**    | 58.5 %  | 36   |
-| BNB   | 232 155   | **75 171**     | 67.6 %  | 36   |
-| Total | 1 708 862 | **703 536**    | —       | —    |
+| Актив | Сырых твитов | После фильтрации | Удалено | Дней |
+|-------|-------------|-----------------|---------|------|
+| BTC   | 737 089     | **321 627**     | 56,4 %  | 36   |
+| ETH   | 739 618     | **306 738**     | 58,5 %  | 36   |
+| BNB   | 232 155     | **75 171**      | 67,6 %  | 36   |
+| Итого | 1 708 862   | **703 536**     | —       | —    |
 
-Filtering steps: language=EN → deduplicate ID → deduplicate normalised text → remove retweets → remove spam/bots → min 4 words.
-
----
-
-### Sentiment distribution — VADER vs FinBERT
-
-| Asset | VADER pos | VADER neu | VADER neg | FinBERT pos | FinBERT neu | FinBERT neg | Agreement |
-|-------|-----------|-----------|-----------|-------------|-------------|-------------|-----------|
-| BTC   | 44.8 %    | 37.3 %    | 18.0 %    | 8.0 %       | 84.5 %      | 7.4 %       | 42.0 %    |
-| ETH   | 47.3 %    | 37.0 %    | 15.7 %    | 6.5 %       | 87.9 %      | 5.6 %       | 40.7 %    |
-| BNB   | 57.2 %    | 30.9 %    | 11.9 %    | 11.4 %      | 85.2 %      | 3.4 %       | 40.0 %    |
-
-FinBERT classifies **84–88 % of tweets as neutral** due to domain shift (trained on formal financial text, applied to informal social media). VADER distributes more evenly and has significantly higher daily variance — making it preferable for correlation analysis at the daily aggregation level.
-
-![VADER vs FinBERT comparison](code/results/cross_crypto/figures/vader_vs_finbert_crosscrypto.png)
+Этапы фильтрации: язык=EN → дедупликация ID → дедупликация нормализованного текста → удаление ретвитов → удаление спама и ботов → минимум 4 слова.
 
 ---
 
-### Pearson correlation — VADER sentiment vs daily return (lag 0)
+### Сравнение VADER и FinBERT
 
-| Asset | r      | p-value | Significant (α = 0.05)? | Post-hoc power |
-|-------|--------|---------|------------------------|----------------|
-| BTC   | 0.218  | 0.208   | No                     | 24.7 %         |
-| ETH   | 0.259  | 0.133   | No                     | 33.1 %         |
-| BNB   | 0.044  | 0.803   | No                     | 5.7 %          |
+| Актив | VADER пол. | VADER нейтр. | VADER отриц. | FinBERT пол. | FinBERT нейтр. | FinBERT отриц. | Согласие |
+|-------|-----------|-------------|-------------|-------------|---------------|---------------|---------|
+| BTC   | 44,8 %    | 37,3 %      | 18,0 %      | 8,0 %       | 84,5 %        | 7,4 %         | 42,0 %  |
+| ETH   | 47,3 %    | 37,0 %      | 15,7 %      | 6,5 %       | 87,9 %        | 5,6 %         | 40,7 %  |
+| BNB   | 57,2 %    | 30,9 %      | 11,9 %      | 11,4 %      | 85,2 %        | 3,4 %         | 40,0 %  |
 
-None of the lags 0–7 reaches p < 0.05 for any asset. BTC and ETH show a similar moderate positive pattern (r ≈ 0.22–0.26); BNB is near zero — consistent with its role as a utility token whose audience produces systematically positive but price-decoupled messages.
+FinBERT классифицирует **84–88 % твитов как нейтральные** — следствие доменного смещения (модель обучена на формальных финансовых текстах, применяется к неформальным текстам социальных сетей). VADER демонстрирует более равномерное распределение и значительно бо́льшую дисперсию дневных агрегатов, что делает его предпочтительным для корреляционного анализа.
 
-![Cross-asset correlations](code/results/cross_crypto/figures/cross_crypto_correlations.png)
-
----
-
-### Statistical power analysis
-
-At n = 36 observations, the minimum detectable correlation at 80 % power is **|r| ≈ 0.45**. The observed correlations for BTC and ETH fall well below this threshold — the null results reflect insufficient power, not necessarily the absence of an effect.
-
-| r (hypothetical) | Power (n = 36) |
-|-----------------|----------------|
-| 0.10            | 8.5 %          |
-| 0.15            | 12.5 %         |
-| 0.20            | 18.7 %         |
-| 0.25            | 27.0 %         |
-| 0.30            | 37.5 %         |
-| 0.45            | ~80 %          |
-
-![Power curve](code/results/cross_crypto/figures/power_curve.png)
+![Сравнение VADER и FinBERT](code/results/cross_crypto/figures/vader_vs_finbert_crosscrypto.png)
 
 ---
 
-### Granger causality test (min p across lags 1–4)
+### Корреляция Пирсона — тональность VADER vs дневная доходность (лаг 0)
 
-|       | Raw series | Differenced series |
-|-------|-----------|-------------------|
-| BTC   | 0.610     | 0.480             |
-| ETH   | 0.321     | 0.233             |
-| BNB   | 0.211     | 0.211             |
+| Актив | r     | p-значение | Значимо (α = 0,05)? | Мощность теста |
+|-------|-------|-----------|---------------------|---------------|
+| BTC   | 0,218 | 0,208     | Нет                 | 24,7 %        |
+| ETH   | 0,259 | 0,133     | Нет                 | 33,1 %        |
+| BNB   | 0,044 | 0,803     | Нет                 | 5,7 %         |
 
-No asset reaches p < 0.05 in either version. The differenced test is the methodologically correct form: BTC and ETH sentiment series are non-stationary (ADF p > 0.05), so first differencing is applied before testing.
+Ни один лаг (0–7) не достигает p < 0,05 ни для одного актива. BTC и ETH образуют кластер с умеренной положительной корреляцией (r ≈ 0,22–0,26); BNB — отдельный кластер с практически нулевой корреляцией, что объясняется функциональным назначением токена как utility-токена Binance.
 
----
-
-### Return direction classifier (panel mode: BTC + ETH + BNB)
-
-| Model                          | Accuracy | ROC-AUC |
-|-------------------------------|----------|---------|
-| DummyClassifier (most_frequent) | **0.563** | 0.500 |
-| Logistic Regression            | 0.538    | 0.362   |
-| Gradient Boosting              | 0.425    | 0.400   |
-
-Neither ML model outperforms the naive baseline — consistent with the weak-form market efficiency hypothesis: a publicly available aggregated sentiment signal is quickly arbitraged away.
-
-![Classifier results](code/results/cross_crypto/figures/prediction_results.png)
+![Кросс-активные корреляции](code/results/cross_crypto/figures/cross_crypto_correlations.png)
 
 ---
 
-### Sample figures — BTC
+### Апостериорный анализ статистической мощности
 
-| Sentiment vs Price | Lagged Correlations |
+При n = 36 наблюдениях минимально детектируемая корреляция при мощности 80 % составляет **|r| ≈ 0,45**. Наблюдаемые значения для BTC и ETH существенно ниже этого порога — незначимые результаты отражают нехватку статистической мощности, а не обязательное отсутствие эффекта.
+
+| r (гипотетическое) | Мощность (n = 36) |
+|-------------------|--------------------|
+| 0,10              | 8,5 %              |
+| 0,15              | 12,5 %             |
+| 0,20              | 18,7 %             |
+| 0,25              | 27,0 %             |
+| 0,30              | 37,5 %             |
+| 0,45              | ~80 %              |
+
+![Кривая мощности](code/results/cross_crypto/figures/power_curve.png)
+
+---
+
+### Тест причинности Грейнджера (min p по лагам 1–4)
+
+|       | Исходные ряды | Дифференцированные ряды |
+|-------|--------------|------------------------|
+| BTC   | 0,610        | 0,480                  |
+| ETH   | 0,321        | 0,233                  |
+| BNB   | 0,211        | 0,211                  |
+
+Ни один актив не достигает p < 0,05 ни в одном из вариантов теста. Тест на дифференцированных рядах — методологически корректная версия: ряды тональности BTC и ETH нестационарны по ADF, поэтому перед тестом применяется первое дифференцирование.
+
+---
+
+### Классификатор направления доходности (панельный режим: BTC + ETH + BNB)
+
+| Модель | Accuracy | ROC-AUC |
+|--------|----------|---------|
+| DummyClassifier (most_frequent) | **0,563** | 0,500 |
+| Логистическая регрессия | 0,538 | 0,362 |
+| Gradient Boosting | 0,425 | 0,400 |
+
+Ни одна ML-модель не превзошла наивный baseline — результат согласуется с гипотезой об эффективности криптовалютного рынка в слабой форме: публично доступный агрегированный тональный сигнал быстро элиминируется арбитражем.
+
+![Результаты классификатора](code/results/cross_crypto/figures/prediction_results.png)
+
+---
+
+### Графики — Bitcoin
+
+| Тональность vs Цена | Лагированные корреляции |
 |---|---|
 | ![](code/results/btc/figures/sentiment_vs_price.png) | ![](code/results/btc/figures/lagged_correlation.png) |
 
-| Sentiment Distribution | Tweet Volume |
+| Распределение тональности | Объём твитов по дням |
 |---|---|
 | ![](code/results/btc/figures/sentiment_distribution.png) | ![](code/results/btc/figures/tweet_volume.png) |
 
 ---
 
-### FinBERT Architecture
+### Архитектура FinBERT
 
-`ProsusAI/finbert` — BERT-base fine-tuned on financial text for 3-class sentiment classification.
+`ProsusAI/finbert` — BERT-base (12 слоёв трансформерного энкодера), дообученный на финансовых текстах для 3-классовой классификации тональности.
 
 ```
 BertForSequenceClassification
 ├─ BertModel
-│   ├─ BertEmbeddings        23 835 648 params
-│   ├─ BertEncoder (× 12)    85 054 464 params
-│   └─ BertPooler               590 592 params
+│   ├─ BertEmbeddings        23 835 648 параметров
+│   ├─ BertEncoder (× 12)    85 054 464 параметров
+│   └─ BertPooler               590 592 параметров
 ├─ Dropout
-└─ Linear (classifier)            2 307 params
-─────────────────────────────────────────────
-Total trainable: 109 484 547 params · 437.94 MB
+└─ Linear (classifier)            2 307 параметров
+───────────────────────────────────────────────────
+Итого: 109 484 547 параметров · 437,94 МБ
 ```
 
-Full `torchinfo` report: [`code/results/finbert_torchinfo.txt`](code/results/finbert_torchinfo.txt)
+Полный вывод torchinfo: [`code/results/finbert_torchinfo.txt`](code/results/finbert_torchinfo.txt)
 
-![FinBERT Netron graph](code/results/figures/netron_finbert_small.png)
+![Граф архитектуры FinBERT (Netron)](code/results/figures/netron_finbert_small.png)
 
 ---
 
-## Testing
+## Тестирование
 
 ```bash
 cd code
 
-# Run all tests
+# Все тесты
 pytest tests/ -v
 
-# With coverage report
+# С отчётом о покрытии
 pytest tests/ -v --cov=src
 
-# Skip FinBERT and full-dataset tests (fast, ~30 s)
+# Без FinBERT и полных датасетов (быстро, ~30 с)
 pytest tests/ -v -m "not slow"
 ```
 
-**354 tests** across 10 test files:
+**354 теста** в 10 файлах:
 
-| File | Covers |
-|------|--------|
-| `test_data_loader.py` | CSV loading, date parsing, encoding |
-| `test_preprocessor.py` | URL/mention removal, tokenisation, edge cases |
-| `test_sentiment_analyzer.py` | VADER range, polarity, FinBERT (mock) |
-| `test_price_fetcher.py` | BTC/ETH/BNB cache loading, fallback chain |
-| `test_binance_loader.py` | 1-min OHLCV aggregation |
-| `test_correlation_analyzer.py` | Pearson/Spearman, lags, Granger, ADF, differenced series |
-| `test_power_analysis.py` | Fisher z power, min detectable r (vs. statistical tables) |
-| `test_predictor.py` | No look-ahead bias, walk-forward splits, bootstrap CI, determinism |
-| `test_data_integrity.py` | Cross-file consistency checks |
-| `test_results_integrity.py` | Output CSV schema and value ranges |
-
----
-
-## Methodology notes
-
-- **Dual text format**: VADER receives the *original* tweet (capitalisation, punctuation, emoji are tonal signals); FinBERT receives *cleaned* text (URLs and mentions are noise for the transformer).
-- **Granger test run twice**: once on raw series, once on first-differenced series after ADF confirms non-stationarity — the differenced version is the statistically valid one.
-- **No look-ahead**: in the classifier, `features[t]` only use sentiment data from day `t`; the target is `sign(return[t+1])`. Walk-forward CV ensures test sets always follow training sets in time.
-- **Reproducibility**: all random seeds fixed — `numpy.random.seed(42)`, `torch.manual_seed(42)`, `random.seed(42)`, `PYTHONHASHSEED=0`.
+| Файл | Что покрывает |
+|------|--------------|
+| `test_data_loader.py` | Загрузка CSV, парсинг дат, кодировка |
+| `test_preprocessor.py` | Удаление URL/упоминаний, токенизация, граничные случаи |
+| `test_sentiment_analyzer.py` | Диапазон VADER, полярность, FinBERT (mock) |
+| `test_price_fetcher.py` | Кэш BTC/ETH/BNB, цепочка fallback |
+| `test_binance_loader.py` | Агрегация 1-мин OHLCV в дневные цены |
+| `test_correlation_analyzer.py` | Pearson/Spearman, лаги, Granger, ADF, дифференцированные ряды |
+| `test_power_analysis.py` | Fisher z мощность, min detectable r (сверка с таблицами) |
+| `test_predictor.py` | Отсутствие утечки будущего, walk-forward, bootstrap CI, детерминизм |
+| `test_data_integrity.py` | Кросс-файловая согласованность данных |
+| `test_results_integrity.py` | Схема и диапазоны значений в выходных CSV |
 
 ---
 
-## CI / CD
+## Методологические особенности
 
-GitHub Actions runs on every push / pull request:
-
-- **Matrix**: Python 3.10 · 3.11 · 3.12
-- **Steps**: install deps → download NLTK data → `pytest tests/ -v` → `flake8` lint
+- **Раздельная подача текстов:** VADER получает *оригинальный* текст (регистр, пунктуация, эмодзи — тональные сигналы); FinBERT — *очищенный* текст (URL и упоминания — шум для трансформера).
+- **Тест Грейнджера дважды:** на исходных рядах и на первых разностях после подтверждения нестационарности тестом ADF — дифференцированная версия методологически корректна.
+- **Отсутствие утечки будущего:** признаки классификатора `features[t]` используют только данные дня `t`; целевая переменная — `sign(return[t+1])`; walk-forward CV гарантирует, что тестовые наблюдения всегда следуют за обучающими.
+- **Воспроизводимость:** все источники случайности зафиксированы — `numpy.random.seed(42)`, `torch.manual_seed(42)`, `random.seed(42)`, `PYTHONHASHSEED=0`.
 
 ---
 
-## License
+## CI/CD
+
+GitHub Actions запускается при каждом push / pull request:
+
+- **Матрица:** Python 3.10 · 3.11 · 3.12
+- **Шаги:** установка зависимостей → загрузка NLTK → `pytest tests/ -v` → `flake8` lint
+
+---
+
+## Лицензия
 
 MIT
