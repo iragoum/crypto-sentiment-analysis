@@ -41,6 +41,9 @@ bash.exe.stackdump
 code/bash.exe.stackdump
 
 
+# Thesis/university documents (not part of public code repo)
+ФОС_2026_for_pred_dipolma.pdf
+
 # Word/Office outputs (generated, not source)
 *.docx
 *.doc
