@@ -35,4 +35,8 @@ def load_tweets(path: str | Path, lang_filter: str = "en") -> pd.DataFrame:
         if col not in df.columns:
             raise ValueError(f"Required column '{col}' missing from dataset")
 
+    # Ensure original_text exists (VADER needs raw text with caps/emoji)
+    if "original_text" not in df.columns:
+        df["original_text"] = df["full_text"]
+
     return df.reset_index(drop=True)

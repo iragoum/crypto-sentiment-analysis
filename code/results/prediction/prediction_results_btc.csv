@@ -1,0 +1,5 @@
+crypto,model,accuracy,accuracy_lower,accuracy_upper,f1,f1_lower,f1_upper,roc_auc,roc_auc_lower,roc_auc_upper,n_test_samples
+btc,Dummy (most_frequent),0.65,0.45,0.85,0.0,0.0,0.0,0.5,0.5,0.5,20
+btc,Dummy (stratified),0.65,0.45,0.85,0.5333,0.1667,0.8,0.6319,0.4047,0.8535,20
+btc,Logistic Regression,0.6,0.35,0.8,0.4286,0.0,0.7275,0.5824,0.2966,0.8352,20
+btc,Gradient Boosting,0.55,0.3,0.75,0.3077,0.0,0.6154,0.3956,0.0933,0.7364,20

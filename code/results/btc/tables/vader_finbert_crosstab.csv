@@ -1,0 +1,5 @@
+vader_label,negative,neutral,positive,Total
+negative,12037,41492,4311,57840
+neutral,5839,107759,6226,119824
+positive,5975,122666,15322,143963
+Total,23851,271917,25859,321627
