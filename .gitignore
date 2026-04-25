@@ -41,8 +41,13 @@ package-lock.json
 bash.exe.stackdump
 code/bash.exe.stackdump
 
-# Claude Code memory
+# Claude / AI assistant files
 .claude/
+CLAUDE.md
+rudn-vkr-skill/
+
+# Thesis/university documents (not part of public code repo)
+ФОС_2026_for_pred_dipolma.pdf
 
 # Word/Office outputs (generated, not source)
 *.docx
