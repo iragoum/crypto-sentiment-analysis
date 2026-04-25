@@ -1,0 +1,5 @@
+crypto,model,accuracy,accuracy_lower,accuracy_upper,f1,f1_lower,f1_upper,roc_auc,roc_auc_lower,roc_auc_upper,n_test_samples
+bnb,Dummy (most_frequent),0.44,0.24,0.64,0.3,0.0,0.5385,0.4167,0.2336,0.6167,25
+bnb,Dummy (stratified),0.48,0.28,0.68,0.4348,0.1739,0.6858,0.4833,0.2695,0.7014,25
+bnb,Logistic Regression,0.6,0.4,0.76,0.375,0.0,0.6407,0.48,0.2467,0.7223,25
+bnb,Gradient Boosting,0.6,0.4,0.76,0.4444,0.1111,0.6958,0.64,0.4025,0.8422,25

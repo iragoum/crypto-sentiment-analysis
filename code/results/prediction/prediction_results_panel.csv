@@ -1,0 +1,5 @@
+crypto,model,accuracy,accuracy_lower,accuracy_upper,f1,f1_lower,f1_upper,roc_auc,roc_auc_lower,roc_auc_upper,n_test_samples
+panel,Dummy (most_frequent),0.5625,0.45,0.6625,0.0,0.0,0.0,0.5,0.5,0.5,80
+panel,Dummy (stratified),0.5625,0.4625,0.6628,0.4928,0.3492,0.6286,0.554,0.452,0.6606,80
+panel,Logistic Regression,0.5375,0.425,0.6378,0.1395,0.0,0.2857,0.3619,0.2469,0.4829,80
+panel,Gradient Boosting,0.425,0.3125,0.5375,0.2581,0.1176,0.4,0.4003,0.2802,0.5318,80

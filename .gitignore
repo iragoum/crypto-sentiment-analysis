@@ -12,5 +12,48 @@ venv/
 .venv/
 *.onnx
 *.onnx.data
+
+# Raw tweet data — not committed (download from Kaggle)
 data/raw/
-data/processed/
+# Binance 1-minute CSVs — large raw files, not committed
+data/raw/prices_binance/
+
+# Processed daily price caches ARE committed (small, aggregated, no raw tweets)
+# data/processed/ — intentionally NOT ignored; price CSVs go to git
+data/processed/tweets_with_sentiment*.csv
+
+# Thesis documents — not part of public code repo
+vkr/
+admin/
+templates/
+Шаблоны_документов/
+presentation/
+rudn-vkr-skill/
+build_vkr.py
+build_zadanie3_4.py
+
+# Node/JS artifacts
+node_modules/
+package.json
+package-lock.json
+
+# Crash dumps
+bash.exe.stackdump
+code/bash.exe.stackdump
+
+# Claude Code memory
+.claude/
+
+# Word/Office outputs (generated, not source)
+*.docx
+*.doc
+
+# Logs
+*.log
+
+# Kaggle credentials / API config
+code/kaggle/
+
+# Large FinBERT intermediate checkpoint files
+code/data/processed/finbert_checkpoint*.csv
+code/data/processed/tweets_with_sentiment*.csv

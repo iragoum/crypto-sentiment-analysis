@@ -1,0 +1,4 @@
+crypto,n,observed_r,observed_power,min_detectable_r_at_0.8
+btc,36,0.2182,0.247,0.4524
+eth,36,0.2591,0.3314,0.4524
+bnb,36,0.0438,0.0573,0.4524

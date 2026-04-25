@@ -153,6 +153,12 @@ def adf_test(series: pd.Series, name: str = "") -> dict:
         critical_1pct, critical_5pct.
     """
     clean = series.dropna()
+    if clean.nunique() <= 1:
+        logger.warning("ADF test skipped for '%s': constant series", name)
+        return {
+            "series": name, "adf_statistic": np.nan, "p_value": np.nan,
+            "is_stationary": False, "critical_1pct": np.nan, "critical_5pct": np.nan,
+        }
     r = adfuller(clean)
     return {
         "series": name,
@@ -162,6 +168,90 @@ def adf_test(series: pd.Series, name: str = "") -> dict:
         "critical_1pct": round(r[4]["1%"], 4),
         "critical_5pct": round(r[4]["5%"], 4),
     }
+
+
+def run_granger_on_differenced(
+    merged: pd.DataFrame,
+    sentiment_col: str,
+    price_col: str,
+    max_lag: int = 7,
+    alpha: float = 0.05,
+) -> pd.DataFrame:
+    """Granger causality test on (possibly differenced) series.
+
+    Pre-check: run ADF on each series. Apply first difference to any
+    non-stationary series (ADF p > alpha). Re-run ADF to confirm.
+    Then run grangercausalitytests on the final (stationary) series.
+
+    Args:
+        merged: Daily DataFrame with sentiment and price columns.
+        sentiment_col: Sentiment column name.
+        price_col: Return/price column name.
+        max_lag: Maximum lag.
+        alpha: Significance level for ADF stationarity check.
+
+    Returns:
+        DataFrame with columns: lag, f_stat, p_value, significant_0.05,
+        x_differenced, y_differenced.
+    """
+    data = merged[[price_col, sentiment_col]].dropna()
+
+    if len(data) < max_lag + 10:
+        logger.warning("Too few observations for Granger (differenced): %d", len(data))
+        return pd.DataFrame()
+
+    x_orig = data[price_col].values.astype(float)
+    y_orig = data[sentiment_col].values.astype(float)
+
+    def _is_stationary(arr: np.ndarray) -> bool:
+        if len(arr) < 5 or len(np.unique(arr)) <= 1:
+            return True
+        return float(adfuller(arr)[1]) < alpha
+
+    x_differenced = not _is_stationary(x_orig)
+    y_differenced = not _is_stationary(y_orig)
+
+    if x_differenced and y_differenced:
+        x = np.diff(x_orig)
+        y = np.diff(y_orig)
+    elif x_differenced:
+        x = np.diff(x_orig)
+        y = y_orig[1:]
+    elif y_differenced:
+        x = x_orig[1:]
+        y = np.diff(y_orig)
+    else:
+        x = x_orig
+        y = y_orig
+
+    min_len = min(len(x), len(y))
+    x, y = x[:min_len], y[:min_len]
+
+    if len(x) < max_lag + 10:
+        logger.warning(
+            "After differencing, too few observations: %d", len(x)
+        )
+        return pd.DataFrame()
+
+    combined = np.column_stack([x, y])
+    try:
+        gc_res = grangercausalitytests(combined, maxlag=max_lag, verbose=False)
+        records = []
+        for lag in range(1, max_lag + 1):
+            f_stat = gc_res[lag][0]["ssr_ftest"][0]
+            p_val = gc_res[lag][0]["ssr_ftest"][1]
+            records.append({
+                "lag": lag,
+                "f_stat": round(f_stat, 4),
+                "p_value": round(p_val, 4),
+                "significant_0.05": "Yes" if p_val < 0.05 else "No",
+                "x_differenced": x_differenced,
+                "y_differenced": y_differenced,
+            })
+        return pd.DataFrame(records)
+    except Exception as e:
+        logger.error("Granger (differenced) error: %s", e)
+        return pd.DataFrame()
 
 
 def correlation_matrix(

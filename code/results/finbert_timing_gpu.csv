@@ -1,0 +1,4 @@
+crypto,n_tweets,elapsed_sec,elapsed_min,throughput_per_sec,device,batch_size
+btc,321627,1797.28,29.95,178.95,cuda,64
+eth,306738,2176.64,36.28,140.92,cuda,64
+bnb,75171,558.49,9.31,134.6,cuda,64

@@ -1,0 +1,4 @@
+crypto,n,vader_pos_pct,vader_neu_pct,vader_neg_pct,finbert_pos_pct,finbert_neu_pct,finbert_neg_pct,agreement_pct,mean_finbert_score
+BTC,321627,44.76,37.26,17.98,8.04,84.54,7.42,42.01,0.8617
+ETH,306738,47.3,36.98,15.71,6.48,87.95,5.57,40.68,0.8672
+BNB,75171,57.19,30.94,11.87,11.41,85.18,3.41,39.98,0.841

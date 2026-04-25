@@ -1,6 +1,7 @@
 """Text preprocessing pipeline for tweet data."""
 from __future__ import annotations
 
+import html
 import re
 import logging
 from typing import List
@@ -26,7 +27,15 @@ def _ensure_nltk() -> None:
 def clean_text(text: str) -> str:
     """Clean a single tweet for FinBERT input.
 
-    Removes URLs, mentions, RT prefix, non-ASCII, and lowercases.
+    Applies the following transformations in order:
+    1. Decode HTML entities (&amp; -> &)
+    2. Remove URLs
+    3. Remove full RT prefix with mention (RT @user:)
+    4. Remove @mentions
+    5. Strip # from hashtags, keep the word (#BTC -> BTC)
+    6. Strip $ from cashtags, keep the word ($BTC -> BTC)
+    7. Remove non-ASCII characters (emoji, CJK, etc.)
+    8. Normalise whitespace and lowercase
 
     NOTE: VADER should receive the *original* (uncleaned) text because
     it uses capitalisation, punctuation, and emoji as tonal signals.
@@ -39,9 +48,12 @@ def clean_text(text: str) -> str:
     """
     if not isinstance(text, str):
         return ""
+    text = html.unescape(text)
     text = re.sub(r"http\S+|www\.\S+", "", text)
-    text = re.sub(r"^RT\s+", "", text)
-    text = re.sub(r"@\w+:?\s*", " ", text)
+    text = re.sub(r"^RT\s+@\w+:?\s*", "", text)
+    text = re.sub(r"@\w+", "", text)
+    text = re.sub(r"#(\w+)", r"\1", text)
+    text = re.sub(r"\$([A-Za-z]{2,})", r"\1", text)
     text = re.sub(r"[^\x00-\x7F]+", " ", text)
     text = re.sub(r"\s+", " ", text).strip().lower()
     return text
