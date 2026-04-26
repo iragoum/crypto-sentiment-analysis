@@ -1,5 +1,9 @@
 # Crypto Sentiment Analysis — BTC / ETH / BNB
 
+[![CI](https://github.com/iragoum/crypto-sentiment-analysis/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/iragoum/crypto-sentiment-analysis/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+
 > **Тема ВКР:** «Исследование изменения стоимости криптовалют на основе сообщений участников рынка»
 >
 > **Студент:** Мугари Абдеррахим, группа НФИбд-01-22, РУДН, 2026
