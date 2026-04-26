@@ -191,7 +191,7 @@ bootstrap CI, детерминизм).
 
 ## CI/CD
 
-GitHub Actions запускает полный тест-сьют на push/PR в `main`:
+GitHub Actions запускает полный тест-сьют на push/PR в `master`:
 - Python 3.10, 3.11, 3.12
 - Flake8 lint
 
