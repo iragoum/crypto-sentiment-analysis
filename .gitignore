@@ -27,7 +27,9 @@ vkr/
 admin/
 templates/
 Шаблоны_документов/
-presentation/
+presentation/*
+# keep only the final defense presentation tracked; backups/template/renders stay ignored
+!presentation/*-01-22.pptx
 build_vkr.py
 build_zadanie3_4.py
 
