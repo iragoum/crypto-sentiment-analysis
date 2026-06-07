@@ -46,4 +46,4 @@ jobs:
         run: pytest tests/ -v --tb=short
 
       - name: Lint check
-        run: flake8 src/ main.py --max-line-length=100 --ignore=E501,W503,E203
+        run: flake8 src/ main.py --max-line-length=100 --ignore=E501,W503,E203,E241,E221

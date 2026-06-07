@@ -22,7 +22,6 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from src.data_loader import load_tweets  # noqa: E402
-from src.preprocessor import preprocess_dataframe  # noqa: E402
 from src.sentiment_analyzer import score_vader, score_finbert  # noqa: E402
 from src.price_fetcher import load_or_fetch_prices  # noqa: E402
 from src.correlation_analyzer import (  # noqa: E402
@@ -374,7 +373,7 @@ def run_single_crypto(crypto: str, args) -> Optional[dict]:
             (axes[0], vader_counts, "VADER"),
             (axes[1], finbert_counts, "FinBERT"),
         ]:
-            vals = [counts.get(l, 0) for l in labels_order]
+            vals = [counts.get(lab, 0) for lab in labels_order]
             ax.bar(labels_ru, vals, color=colors, edgecolor="black", alpha=0.8)
             ax.set_ylabel("Доля твитов")
             ax.set_title(f"{title} — {CRYPTO_CONFIG[crypto]['label']}")
@@ -512,8 +511,8 @@ def plot_power_curve(figures: Path) -> None:
     ax.axvline(mdr, color="gray", linestyle=":", linewidth=1.2,
                label=f"Минимально детектируемая r = {mdr:.2f}")
     for r_obs, lbl, clr in [(0.218, "BTC (r = 0.218)", "#4C72B0"),
-                             (0.259, "ETH (r = 0.259)", "#DD8452"),
-                             (0.044, "BNB (r = 0.044)", "#55A868")]:
+                            (0.259, "ETH (r = 0.259)", "#DD8452"),
+                            (0.044, "BNB (r = 0.044)", "#55A868")]:
         ax.axvline(abs(r_obs), color=clr, linestyle="-.", linewidth=1.2, label=lbl)
     ax.set_xlabel("|r| (коэффициент корреляции Пирсона)")
     ax.set_ylabel("Статистическая мощность")
